@@ -15,6 +15,14 @@ const loop = setInterval(() => {
     if(pipeLeftPosition > 0 && pipeLeftPosition <= 70 && marioBottomPosition <= 60) {
         pipe.style.animation = 'none';
         pipe.style.left = `${pipeLeftPosition}px`;
+
+        mario.style.animation = 'none';
+        mario.style.bottom = `${marioBottomPosition}px`;
+        mario.src = './images/game-over.png'
+        mario.style.width = '60px';
+        mario.style.marginLeft = '20px';
+
+        clearInterval(loop);
     }
 }, 10)
 
