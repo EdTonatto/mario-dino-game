@@ -5,6 +5,7 @@ const GAME_WIDTH = 800;
 const GAME_HEIGHT = 200;
 
 let scaleRatio = null;
+let previousTime = null;
 
 function getScaleRatio() {
     const screenHeight = Math.min(
@@ -35,3 +36,24 @@ setScreen();
 window.addEventListener('resize', () => setTimeout(setScreen, 500));
 if(screen.orientation)
     screen.orientation.addEventListener('change', setScreen);
+
+function clearScreen() {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function gameLoop(currentTime) {
+    if(previousTime === null) {
+        previousTime = currentTime;
+        requestAnimationFrame(gameLoop);
+        return;    
+    }
+    const frameTimeDelta = currentTime - previousTime;
+    previousTime = currentTime;
+    console.log(frameTimeDelta);
+    clearScreen();
+
+    requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
