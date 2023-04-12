@@ -84,6 +84,7 @@ function gameLoop(currentTime) {
     clearScreen();
 
     ground.update(gameSpeed, frameTimeDelta);
+    mario.update(gameSpeed, frameTimeDelta);
 
     ground.draw();
     mario.draw();
