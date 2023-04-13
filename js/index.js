@@ -68,7 +68,11 @@ if(screen.orientation)
     screen.orientation.addEventListener('change', setScreen);
 
 function clearScreen() {
-    ctx.fillStyle = 'white';
+    const grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grd.addColorStop(0, '#87CEEB');
+    grd.addColorStop(1, '#E0F6FF');
+
+    ctx.fillStyle = grd;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
