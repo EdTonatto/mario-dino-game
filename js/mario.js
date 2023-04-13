@@ -105,6 +105,11 @@ class Mario {
 
     update(gameSpeed, frameTimeDelta) {
         this.run(gameSpeed, frameTimeDelta);
+
+        if(this.jumpInProgress){
+            this.image = this.aliveMarioImage;
+        }
+
         this.jump(frameTimeDelta);
     }
 
