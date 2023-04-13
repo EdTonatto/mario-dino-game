@@ -23,6 +23,7 @@ body {
 }
 
 canvas {
+    overflow: hidden;
     border: 2px solid grey
 }
 
