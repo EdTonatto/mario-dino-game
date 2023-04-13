@@ -1,5 +1,6 @@
 import { Mario } from './mario.js';
 import { Ground } from './ground.js';
+import { Cloud } from './cloud.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -15,10 +16,13 @@ const MAX_JUMP_HEIGHT = GAME_HEIGHT;
 const MIN_JUMP_HEIGHT = 150;
 const GROUND_WIDTH = 1250;
 const GROUND_HEIGHT = 13;
-const GROUND_AND_PIPES_SPEED = 0.5;
+const CLOUD_WIDTH = 1151 / 5;
+const CLOUD_HEIGHT = 531 / 5;
+const GROUND_PIPES_CLOUD_SPEED = 0.5;
 
 let mario = null;
 let ground = null;
+let cloud = null;
 let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
@@ -50,7 +54,11 @@ function createSprites() {
     const groundWidthInGame = GROUND_WIDTH * scaleRatio;
     const groundHeightInGame = GROUND_HEIGHT * scaleRatio;
 
-    ground = new Ground(ctx, groundWidthInGame, groundHeightInGame, GROUND_AND_PIPES_SPEED, scaleRatio);
+    const cloudWidthInGame = CLOUD_WIDTH * scaleRatio;
+    const cloudHeightInGame = CLOUD_HEIGHT * scaleRatio;
+
+    cloud = new Cloud(ctx, cloudWidthInGame, cloudHeightInGame, GROUND_PIPES_CLOUD_SPEED, scaleRatio)
+    ground = new Ground(ctx, groundWidthInGame, groundHeightInGame, GROUND_PIPES_CLOUD_SPEED, scaleRatio);
     mario = new Mario(ctx, marioWidthInGame, marioHeightInGame, minJumpHeightInGame, maxJumpHeightInGame, scaleRatio);
 }
 
@@ -87,9 +95,11 @@ function gameLoop(currentTime) {
     
     clearScreen();
 
+    cloud.update(gameSpeed, frameTimeDelta);
     ground.update(gameSpeed, frameTimeDelta);
     mario.update(gameSpeed, frameTimeDelta);
 
+    cloud.draw();
     ground.draw();
     mario.draw();
 
