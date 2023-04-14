@@ -125,7 +125,6 @@ function gameLoop(currentTime) {
     }
  
     if(!gameOver && obstacleController.collideWith(mario)){
-        console.log('hahaha')
         gameOver = true;
     }
 
