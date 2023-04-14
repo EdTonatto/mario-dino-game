@@ -1,7 +1,7 @@
-import { Mario } from './mario.js';
-import { Ground } from './ground.js';
-import { Cloud } from './cloud.js';
-import { ObstacleController } from './obstaclecontroller.js';
+import { Mario } from '../js/mario.js';
+import { Ground } from '../js/ground.js';
+import { Cloud } from '../js/cloud.js';
+import { ObstacleController } from '../js/obstaclecontroller.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
