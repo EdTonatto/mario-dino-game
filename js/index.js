@@ -1,6 +1,7 @@
 import { Mario } from './mario.js';
 import { Ground } from './ground.js';
 import { Cloud } from './cloud.js';
+import { ObstacleController } from './obstaclecontroller.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -19,10 +20,15 @@ const GROUND_HEIGHT = 13;
 const CLOUD_WIDTH = 1151 / 5;
 const CLOUD_HEIGHT = 531 / 5;
 const GROUND_PIPES_CLOUD_SPEED = 0.5;
+const OBSTACLE_CONFIG = [
+    {width: 40, height: 45, image: '../images/pipe.png'},
+];
+
 
 let mario = null;
 let ground = null;
 let cloud = null;
+let obstacleController = null;
 let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
@@ -59,6 +65,16 @@ function createSprites() {
 
     cloud = new Cloud(ctx, cloudWidthInGame, cloudHeightInGame, GROUND_PIPES_CLOUD_SPEED, scaleRatio)
     ground = new Ground(ctx, groundWidthInGame, groundHeightInGame, GROUND_PIPES_CLOUD_SPEED, scaleRatio);
+    const obstacleImages = OBSTACLE_CONFIG.map((obstacle) => {
+        const image = new Image();
+        image.src = obstacle.image;
+        return {
+            image: image,
+            width: obstacle.width * scaleRatio,
+            height: obstacle.height * scaleRatio,
+        };
+    });
+    obstacleController = new ObstacleController(ctx, obstacleImages, GROUND_PIPES_CLOUD_SPEED, scaleRatio);
     mario = new Mario(ctx, marioWidthInGame, marioHeightInGame, minJumpHeightInGame, maxJumpHeightInGame, scaleRatio);
 }
 
@@ -97,10 +113,12 @@ function gameLoop(currentTime) {
 
     cloud.update(gameSpeed, frameTimeDelta);
     ground.update(gameSpeed, frameTimeDelta);
+    obstacleController.update(gameSpeed, frameTimeDelta);
     mario.update(gameSpeed, frameTimeDelta);
-
+ 
     cloud.draw();
     ground.draw();
+    obstacleController.draw();
     mario.draw();
 
     requestAnimationFrame(gameLoop);
