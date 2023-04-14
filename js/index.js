@@ -106,6 +106,20 @@ function clearScreen() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+function showGameOver() {
+    const fontSize = 70 * scaleRatio;
+    
+    const x = canvas.width / 4.5;
+    const y = canvas.height / 2;ctx.font = `${fontSize}px Verdana`;
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 5;
+    ctx.strokeText("GAME OVER", x, y);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ebebeb';
+    ctx.fillText("GAME OVER", x, y);
+}
+
 function gameLoop(currentTime) {
     if(previousTime === null) {
         previousTime = currentTime;
@@ -132,6 +146,10 @@ function gameLoop(currentTime) {
     ground.draw();
     obstacleController.draw();
     mario.draw();
+
+    if(gameOver){
+        showGameOver();
+    }
 
     requestAnimationFrame(gameLoop);
 }
