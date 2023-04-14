@@ -149,6 +149,10 @@ class Ground{
     update(gameSpeed, frameTimeDelta) {
         this.x -= gameSpeed * frameTimeDelta * this.speed * this.scaleRatio;
     }
+
+    reset(){
+        this.x = 0;
+    }
 }
 
 class Cloud{
@@ -180,6 +184,10 @@ class Cloud{
     update(gameSpeed, frameTimeDelta) {
         this.x -= gameSpeed * frameTimeDelta * (this.speed / 2.5) * this.scaleRatio;
     }
+
+    reset(){
+        this.x = this.canvas.width;
+    }
 }
 
 class Obstacle {
@@ -198,6 +206,20 @@ class Obstacle {
   
     draw() {
         this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+
+    collideWith(sprite) {
+        const adjustBy = 1.2;
+        if(
+            sprite.x < this.x + this.width / adjustBy &&
+            sprite.x + sprite.width / adjustBy > this.x &&
+            sprite.y < this.y + this.height / adjustBy &&
+            sprite.height + sprite.y / adjustBy > this.y
+        ){
+            return true;
+        } else {
+            return false
+        }
     }
 }
 
@@ -220,8 +242,8 @@ class ObstacleController {
 
     setNextObstacleTime() {
         const num = this.getRandomNumber(
-        this.OBSTACLE_INTERVAL_MIN,
-        this.OBSTACLE_INTERVAL_MAX
+            this.OBSTACLE_INTERVAL_MIN,
+            this.OBSTACLE_INTERVAL_MAX
         );
 
         this.nextObstacleInterval = num;
@@ -232,7 +254,7 @@ class ObstacleController {
     }
 
     createObstacle() {
-        const index = this.getRandomNumber(0, this.obstacleImages.length - 1);
+        const index = this.getRandomNumber(0, this.obstacleImages.length);
         const obstacleImage = this.obstacleImages[index];
         const x = this.canvas.width * 1.5;
         const y = this.canvas.height - obstacleImage.height;
@@ -258,6 +280,14 @@ class ObstacleController {
     draw() {
         this.obstacle.forEach((obstacle) => obstacle.draw());
     }
+
+    collideWith(sprite){
+        return this.obstacle.some((obstacle) => obstacle.collideWith(sprite));
+    }
+
+    reset(){
+        this.obstacle = [];
+    }
 }
 
 const canvas = document.getElementById('game');
@@ -279,6 +309,11 @@ const CLOUD_HEIGHT = 531 / 5;
 const GROUND_PIPES_CLOUD_SPEED = 0.5;
 const OBSTACLE_CONFIG = [
     {width: 40, height: 45, image: './images/pipe.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: './images/goomba.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: './images/green-koopa-shell.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: './images/red-koopa-shell.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: './images/spike.png'},
+    {width: 32 * 1.66, height: 16 * 1.66, image: './images/spike-2.png'},
 ];
 
 
@@ -289,6 +324,9 @@ let obstacleController = null;
 let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
+let gameOver = false;
+let hasAddedEventListenersForRestart = false;
+let waitingStart = true;
 
 function getScaleRatio() {
     const screenHeight = Math.min(
@@ -357,6 +395,59 @@ function clearScreen() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+function reset(){
+    hasAddedEventListenersForRestart = false;
+    gameOver = false;
+    waitingStart = false;
+    cloud.reset();
+    ground.reset();
+    obstacleController.reset();
+    gameSpeed = GAME_SPEED_START;
+}
+
+function setupGameReset() {
+    if(!hasAddedEventListenersForRestart){
+        hasAddedEventListenersForRestart = true;
+        
+        setTimeout(() => {
+            window.addEventListener('keyup', reset, { once: true });
+            window.addEventListener('touchstart', reset, { once: true });
+        }, 1000)
+    }
+}
+
+function showGameOver() {
+    const fontSize = 70 * scaleRatio;
+    
+    const x = canvas.width / 4.5;
+    const y = canvas.height / 2;ctx.font = `${fontSize}px Verdana`;
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 5;
+    ctx.strokeText("GAME OVER", x, y);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ebebeb';
+    ctx.fillText("GAME OVER", x, y);
+}
+
+function updateGameSpeed(frameTimeDelta) {
+    gameSpeed += frameTimeDelta * GAME_SPEED_INCREMENT;
+}
+
+function showStartGame(){
+    const fontSize = 30 * scaleRatio;
+    
+    const x = canvas.width / 20;
+    const y = canvas.height / 2;ctx.font = `${fontSize}px Verdana`;
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 5;
+    ctx.strokeText("TAP SCREEN OR PRESS SPACE TO START GAME", x, y);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ebebeb';
+    ctx.fillText("TAP SCREEN OR PRESS SPACE TO START GAME", x, y);
+}
+
 function gameLoop(currentTime) {
     if(previousTime === null) {
         previousTime = currentTime;
@@ -368,17 +459,36 @@ function gameLoop(currentTime) {
     
     clearScreen();
 
-    cloud.update(gameSpeed, frameTimeDelta);
-    ground.update(gameSpeed, frameTimeDelta);
-    obstacleController.update(gameSpeed, frameTimeDelta);
-    mario.update(gameSpeed, frameTimeDelta);
+    if(!gameOver && !waitingStart){
+        cloud.update(gameSpeed, frameTimeDelta);
+        ground.update(gameSpeed, frameTimeDelta);
+        obstacleController.update(gameSpeed, frameTimeDelta);
+        mario.update(gameSpeed, frameTimeDelta);
+        updateGameSpeed(frameTimeDelta);
+    }
  
+    if(!gameOver && obstacleController.collideWith(mario)){
+        gameOver = true;
+        setupGameReset();
+    }
+
     cloud.draw();
     ground.draw();
     obstacleController.draw();
     mario.draw();
 
+    if(gameOver){
+        showGameOver();
+    }
+
+    if(waitingStart){
+        showStartGame();
+    }
+
     requestAnimationFrame(gameLoop);
 }
 
 requestAnimationFrame(gameLoop);
+
+window.addEventListener('keyup', reset, { once: true });
+window.addEventListener('touchstart', reset, { once: true });
