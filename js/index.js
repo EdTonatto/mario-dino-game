@@ -38,6 +38,7 @@ let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
 let gameOver = false;
+let hasAddedEventListenersForRestart = false;
 
 function getScaleRatio() {
     const screenHeight = Math.min(
@@ -106,6 +107,26 @@ function clearScreen() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+function reset(){
+    hasAddedEventListenersForRestart = false;
+    gameOver = false;
+    cloud.reset();
+    ground.reset();
+    obstacleController.reset();
+    gameSpeed = GAME_SPEED_START;
+}
+
+function setupGameReset() {
+    if(!hasAddedEventListenersForRestart){
+        hasAddedEventListenersForRestart = true;
+        
+        setTimeout(() => {
+            window.addEventListener('keyup', reset, { once: true });
+            window.addEventListener('touchstart', reset, { once: true });
+        }, 1000)
+    }
+}
+
 function showGameOver() {
     const fontSize = 70 * scaleRatio;
     
@@ -140,6 +161,7 @@ function gameLoop(currentTime) {
  
     if(!gameOver && obstacleController.collideWith(mario)){
         gameOver = true;
+        setupGameReset();
     }
 
     cloud.draw();

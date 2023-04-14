@@ -27,6 +27,10 @@ class Cloud{
     update(gameSpeed, frameTimeDelta) {
         this.x -= gameSpeed * frameTimeDelta * (this.speed / 2.5) * this.scaleRatio;
     }
+
+    reset(){
+        this.x = this.canvas.width;
+    }
 }
 
 export { Cloud };

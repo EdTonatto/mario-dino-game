@@ -61,6 +61,10 @@ class ObstacleController {
     collideWith(sprite){
         return this.obstacle.some((obstacle) => obstacle.collideWith(sprite));
     }
+
+    reset(){
+        this.obstacle = [];
+    }
 }
 
 export { ObstacleController };

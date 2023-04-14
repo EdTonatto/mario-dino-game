@@ -26,6 +26,10 @@ class Ground{
     update(gameSpeed, frameTimeDelta) {
         this.x -= gameSpeed * frameTimeDelta * this.speed * this.scaleRatio;
     }
+
+    reset(){
+        this.x = 0;
+    }
 }
 
 export { Ground };
