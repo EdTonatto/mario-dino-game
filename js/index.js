@@ -3,6 +3,268 @@ import { Ground } from './ground.js';
 import { Cloud } from './cloud.js';
 import { ObstacleController } from './obstaclecontroller.js';
 
+class Mario {
+    WALK_ANIMATION_TIMER = 200;
+    walkAnimationTimer = this.WALK_ANIMATION_TIMER;
+    dinoRunImages = [];
+
+    jumpPressed = false;
+    jumpInProgress = false;
+    falling = false;
+    JUMP_SPEED = 0.6;
+    GRAVITY = 0.4;
+
+    constructor(ctx, width, height, minJumpHeight, maxJumpHeight, scaleRatio) {
+        this.ctx = ctx;
+        this.canvas = ctx.canvas;
+        this.width = width;
+        this.height = height;
+        this.minJumpHeight = minJumpHeight;
+        this.maxJumpHeight = maxJumpHeight;
+        this.scaleRatio = scaleRatio;
+
+        this.x = 15 * scaleRatio;
+        this.y = this.canvas.height - this.height - 1.5 * scaleRatio;
+        this.yStandingPosition = this.y;
+
+        this.marioJumpImage = new Image();
+        this.marioJumpImage.src = '../images/mario-jump.png';
+
+        this.aliveMarioImage = new Image();
+        this.aliveMarioImage.src = '../images/mario-stand-still.png';
+        this.image = this.aliveMarioImage;
+
+        const marioRunImage1 = new Image();
+        marioRunImage1.src = '../images/mario-run-1.png';
+
+        const marioRunImage2 = new Image();
+        marioRunImage2.src = '../images/mario-run-2.png';
+
+        this.dinoRunImages.push(marioRunImage1);
+        this.dinoRunImages.push(marioRunImage2);
+
+        window.removeEventListener("keydown", this.keydown);
+        window.removeEventListener("keyup", this.keyup);        
+        window.addEventListener("keydown", this.keydown);
+        window.addEventListener("keyup", this.keyup);
+
+        window.removeEventListener('touchstart', this.touchstart);
+        window.removeEventListener('touchend', this.touchend);
+        window.addEventListener('touchstart', this.touchstart);
+        window.addEventListener('touchend', this.touchend);
+
+    }
+
+    keydown = (event) => {
+        if(event.code === 'Space') {
+            this.jumpPressed = true;
+        }
+    }
+
+    keyup = (event) => {
+        if(event.code === 'Space') {
+            this.jumpPressed = false;
+        }
+    }
+
+    touchstart = () => {
+        this.jumpPressed = true;
+    }
+
+    touchend = () => {
+        this.jumpPressed = false;
+    }
+
+    run(gameSpeed, frameTimeDelta) {
+        if(this.walkAnimationTimer <= 0) {
+            if(this.image === this.dinoRunImages[0]) {
+                this.image = this.dinoRunImages[1];
+            } else {
+                this.image = this.dinoRunImages[0];
+            }
+            this.walkAnimationTimer = this.WALK_ANIMATION_TIMER;
+        }
+        this.walkAnimationTimer -= frameTimeDelta * gameSpeed;
+    }
+
+    jump(frameTimeDelta) {
+        if(this.jumpPressed){
+            this.jumpInProgress = true;
+        }
+
+        if(this.jumpInProgress && !this.falling) {
+            if(this.y > this.canvas.height - this.minJumpHeight || this.y > this.canvas.height - this.maxJumpHeight && this.jumpPressed) {
+                this.y -= this.JUMP_SPEED * frameTimeDelta * this.scaleRatio;
+            } else {
+                this.falling = true;
+            }
+        } else {
+            if(this.y < this.yStandingPosition) {
+                this.y += this.GRAVITY * frameTimeDelta * this.scaleRatio;
+                if(this.y + this.height > this.canvas.height) {
+                    this.y = this.yStandingPosition
+                }
+            } else {
+                this.falling = false;
+                this.jumpInProgress = false;
+            }
+        }
+    }
+
+    update(gameSpeed, frameTimeDelta) {
+        this.run(gameSpeed, frameTimeDelta);
+
+        if(this.jumpInProgress){
+            this.image = this.marioJumpImage;
+        }
+
+        this.jump(frameTimeDelta);
+    }
+
+    draw() {
+        this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+}
+
+class Ground{
+    constructor(ctx, width, height, speed, scaleRatio){
+        this.ctx = ctx;
+        this.canvas = ctx.canvas;
+        this.width = width;
+        this.height = height;
+        this.speed = speed;
+        this.scaleRatio = scaleRatio;
+
+        this.x = 0;
+        this.y = this.canvas.height - this.height;
+
+        this.groundImage = new Image();
+        this.groundImage.src = '../images/ground.png';
+    }
+
+    draw() {
+        this.ctx.drawImage(this.groundImage, this.x, this.y, this.width, this.height);
+        this.ctx.drawImage(this.groundImage, this.x + this.width, this.y, this.width, this.height);
+
+        if(this.x < -this.width) {
+            this.x = 0;
+        }
+    }
+
+    update(gameSpeed, frameTimeDelta) {
+        this.x -= gameSpeed * frameTimeDelta * this.speed * this.scaleRatio;
+    }
+}
+
+class Cloud{
+    constructor(ctx, width, height, speed, scaleRatio){
+        this.ctx = ctx;
+        this.canvas = ctx.canvas;
+        this.width = width;
+        this.height = height;
+        this.speed = speed;
+        this.scaleRatio = scaleRatio;
+
+        this.x = this.canvas.width;
+        this.y = 25;
+
+        this.cloudImage = new Image();
+        this.cloudImage.src = '../images/clouds.png';
+    }
+
+    draw() {
+        this.ctx.drawImage(this.cloudImage, this.x, this.y, this.width, this.height);
+        this.ctx.drawImage(this.cloudImage, this.x + this.width * 1.66, this.y, this.width, this.height);
+
+        if(this.x + this.width * 2 < -this.width) {
+            this.x = this.canvas.width;
+            this.y = Math.floor(Math.random() * (30 - 5) + 5);
+        }
+    }
+
+    update(gameSpeed, frameTimeDelta) {
+        this.x -= gameSpeed * frameTimeDelta * (this.speed / 2.5) * this.scaleRatio;
+    }
+}
+
+class Obstacle {
+    constructor(ctx, x, y, width, height, image) {
+        this.ctx = ctx;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.image = image;
+    }
+  
+    update(speed, gameSpeed, frameTimeDelta, scaleRatio) {
+        this.x -= speed * gameSpeed * frameTimeDelta * scaleRatio;
+    }
+  
+    draw() {
+        this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+}
+
+class ObstacleController {
+    OBSTACLE_INTERVAL_MIN = 500;
+    OBSTACLE_INTERVAL_MAX = 2000;
+
+    nextObstacleInterval = null;
+    obstacle = [];
+
+    constructor(ctx, obstacleImages, scaleRatio, speed) {
+        this.ctx = ctx;
+        this.canvas = ctx.canvas;
+        this.obstacleImages = obstacleImages;
+        this.scaleRatio = scaleRatio;
+        this.speed = speed;
+
+        this.setNextObstacleTime();
+    }
+
+    setNextObstacleTime() {
+        const num = this.getRandomNumber(
+        this.OBSTACLE_INTERVAL_MIN,
+        this.OBSTACLE_INTERVAL_MAX
+        );
+
+        this.nextObstacleInterval = num;
+    }
+
+    getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+
+    createObstacle() {
+        const index = this.getRandomNumber(0, this.obstacleImages.length - 1);
+        const obstacleImage = this.obstacleImages[index];
+        const x = this.canvas.width * 1.5;
+        const y = this.canvas.height - obstacleImage.height;
+        const obstacle = new Obstacle(this.ctx, x, y, obstacleImage.width, obstacleImage.height, obstacleImage.image);
+
+        this.obstacle.push(obstacle);
+    }
+
+    update(gameSpeed, frameTimeDelta) {
+        if (this.nextObstacleInterval <= 0) {
+            this.createObstacle();
+            this.setNextObstacleTime();
+        }
+        this.nextObstacleInterval -= frameTimeDelta;
+
+        this.obstacle.forEach((obstacle) => {
+            obstacle.update(this.speed, gameSpeed, frameTimeDelta, this.scaleRatio);
+        });
+
+        this.obstacle = this.obstacle.filter((obstacle) => obstacle.x > -obstacle.width);
+    }
+
+    draw() {
+        this.obstacle.forEach((obstacle) => obstacle.draw());
+    }
+}
+
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
