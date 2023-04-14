@@ -19,8 +19,8 @@ class ObstacleController {
 
     setNextObstacleTime() {
         const num = this.getRandomNumber(
-        this.OBSTACLE_INTERVAL_MIN,
-        this.OBSTACLE_INTERVAL_MAX
+            this.OBSTACLE_INTERVAL_MIN,
+            this.OBSTACLE_INTERVAL_MAX
         );
 
         this.nextObstacleInterval = num;
@@ -31,7 +31,7 @@ class ObstacleController {
     }
 
     createObstacle() {
-        const index = this.getRandomNumber(0, this.obstacleImages.length - 1);
+        const index = this.getRandomNumber(0, this.obstacleImages.length);
         const obstacleImage = this.obstacleImages[index];
         const x = this.canvas.width * 1.5;
         const y = this.canvas.height - obstacleImage.height;

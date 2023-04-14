@@ -22,6 +22,11 @@ const CLOUD_HEIGHT = 531 / 5;
 const GROUND_PIPES_CLOUD_SPEED = 0.5;
 const OBSTACLE_CONFIG = [
     {width: 40, height: 45, image: '../images/pipe.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: '../images/goomba.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: '../images/green-koopa-shell.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: '../images/red-koopa-shell.png'},
+    {width: 16 * 1.66, height: 16 * 1.66, image: '../images/spike.png'},
+    {width: 32 * 1.66, height: 16 * 1.66, image: '../images/spike-2.png'},
 ];
 
 
