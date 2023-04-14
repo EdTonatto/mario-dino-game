@@ -39,6 +39,7 @@ let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
 let gameOver = false;
 let hasAddedEventListenersForRestart = false;
+let waitingStart = true;
 
 function getScaleRatio() {
     const screenHeight = Math.min(
@@ -110,6 +111,7 @@ function clearScreen() {
 function reset(){
     hasAddedEventListenersForRestart = false;
     gameOver = false;
+    waitingStart = false;
     cloud.reset();
     ground.reset();
     obstacleController.reset();
@@ -141,6 +143,20 @@ function showGameOver() {
     ctx.fillText("GAME OVER", x, y);
 }
 
+function showStartGame(){
+    const fontSize = 30 * scaleRatio;
+    
+    const x = canvas.width / 20;
+    const y = canvas.height / 2;ctx.font = `${fontSize}px Verdana`;
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 10;
+    ctx.lineWidth = 5;
+    ctx.strokeText("TAP SCREEN OR PRESS SPACE TO START GAME", x, y);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ebebeb';
+    ctx.fillText("TAP SCREEN OR PRESS SPACE TO START GAME", x, y);
+}
+
 function gameLoop(currentTime) {
     if(previousTime === null) {
         previousTime = currentTime;
@@ -152,7 +168,7 @@ function gameLoop(currentTime) {
     
     clearScreen();
 
-    if(!gameOver){
+    if(!gameOver && !waitingStart){
         cloud.update(gameSpeed, frameTimeDelta);
         ground.update(gameSpeed, frameTimeDelta);
         obstacleController.update(gameSpeed, frameTimeDelta);
@@ -173,7 +189,14 @@ function gameLoop(currentTime) {
         showGameOver();
     }
 
+    if(waitingStart){
+        showStartGame();
+    }
+
     requestAnimationFrame(gameLoop);
 }
 
 requestAnimationFrame(gameLoop);
+
+window.addEventListener('keyup', reset, { once: true });
+window.addEventListener('touchstart', reset, { once: true });
