@@ -25,7 +25,7 @@ class Cloud{
     }
 
     update(gameSpeed, frameTimeDelta) {
-        this.x -= gameSpeed * frameTimeDelta * this.speed * this.scaleRatio;
+        this.x -= gameSpeed * frameTimeDelta * (this.speed / 2.5) * this.scaleRatio;
     }
 }
 
