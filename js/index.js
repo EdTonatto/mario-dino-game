@@ -1,8 +1,3 @@
-import { Mario } from './mario.js';
-import { Ground } from './ground.js';
-import { Cloud } from './cloud.js';
-import { ObstacleController } from './obstaclecontroller.js';
-
 class Mario {
     WALK_ANIMATION_TIMER = 200;
     walkAnimationTimer = this.WALK_ANIMATION_TIMER;
