@@ -37,6 +37,7 @@ let obstacleController = null;
 let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
+let gameOver = false;
 
 function getScaleRatio() {
     const screenHeight = Math.min(
@@ -116,11 +117,18 @@ function gameLoop(currentTime) {
     
     clearScreen();
 
-    cloud.update(gameSpeed, frameTimeDelta);
-    ground.update(gameSpeed, frameTimeDelta);
-    obstacleController.update(gameSpeed, frameTimeDelta);
-    mario.update(gameSpeed, frameTimeDelta);
+    if(!gameOver){
+        cloud.update(gameSpeed, frameTimeDelta);
+        ground.update(gameSpeed, frameTimeDelta);
+        obstacleController.update(gameSpeed, frameTimeDelta);
+        mario.update(gameSpeed, frameTimeDelta);
+    }
  
+    if(!gameOver && obstacleController.collideWith(mario)){
+        console.log('hahaha')
+        gameOver = true;
+    }
+
     cloud.draw();
     ground.draw();
     obstacleController.draw();

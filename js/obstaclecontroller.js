@@ -57,6 +57,10 @@ class ObstacleController {
     draw() {
         this.obstacle.forEach((obstacle) => obstacle.draw());
     }
+
+    collideWith(sprite){
+        return this.obstacle.some((obstacle) => obstacle.collideWith(sprite));
+    }
 }
 
 export { ObstacleController };
