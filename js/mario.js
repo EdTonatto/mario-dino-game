@@ -22,6 +22,9 @@ class Mario {
         this.y = this.canvas.height - this.height - 1.5 * scaleRatio;
         this.yStandingPosition = this.y;
 
+        this.marioJumpImage = new Image();
+        this.marioJumpImage.src = '../images/mario-jump.png';
+
         this.aliveMarioImage = new Image();
         this.aliveMarioImage.src = '../images/mario-stand-still.png';
         this.image = this.aliveMarioImage;
@@ -107,7 +110,7 @@ class Mario {
         this.run(gameSpeed, frameTimeDelta);
 
         if(this.jumpInProgress){
-            this.image = this.aliveMarioImage;
+            this.image = this.marioJumpImage;
         }
 
         this.jump(frameTimeDelta);
