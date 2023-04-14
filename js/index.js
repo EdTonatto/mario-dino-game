@@ -143,6 +143,10 @@ function showGameOver() {
     ctx.fillText("GAME OVER", x, y);
 }
 
+function updateGameSpeed(frameTimeDelta) {
+    gameSpeed += frameTimeDelta * GAME_SPEED_INCREMENT;
+}
+
 function showStartGame(){
     const fontSize = 30 * scaleRatio;
     
@@ -173,6 +177,7 @@ function gameLoop(currentTime) {
         ground.update(gameSpeed, frameTimeDelta);
         obstacleController.update(gameSpeed, frameTimeDelta);
         mario.update(gameSpeed, frameTimeDelta);
+        updateGameSpeed(frameTimeDelta);
     }
  
     if(!gameOver && obstacleController.collideWith(mario)){
