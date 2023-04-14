@@ -23,17 +23,17 @@ class Mario {
         this.yStandingPosition = this.y;
 
         this.marioJumpImage = new Image();
-        this.marioJumpImage.src = '../images/mario-jump.png';
+        this.marioJumpImage.src = './images/mario-jump.png';
 
         this.aliveMarioImage = new Image();
-        this.aliveMarioImage.src = '../images/mario-stand-still.png';
+        this.aliveMarioImage.src = './images/mario-stand-still.png';
         this.image = this.aliveMarioImage;
 
         const marioRunImage1 = new Image();
-        marioRunImage1.src = '../images/mario-run-1.png';
+        marioRunImage1.src = './images/mario-run-1.png';
 
         const marioRunImage2 = new Image();
-        marioRunImage2.src = '../images/mario-run-2.png';
+        marioRunImage2.src = './images/mario-run-2.png';
 
         this.dinoRunImages.push(marioRunImage1);
         this.dinoRunImages.push(marioRunImage2);
@@ -134,7 +134,7 @@ class Ground{
         this.y = this.canvas.height - this.height;
 
         this.groundImage = new Image();
-        this.groundImage.src = '../images/ground.png';
+        this.groundImage.src = './images/ground.png';
     }
 
     draw() {
@@ -164,7 +164,7 @@ class Cloud{
         this.y = 25;
 
         this.cloudImage = new Image();
-        this.cloudImage.src = '../images/clouds.png';
+        this.cloudImage.src = './images/clouds.png';
     }
 
     draw() {
@@ -278,7 +278,7 @@ const CLOUD_WIDTH = 1151 / 5;
 const CLOUD_HEIGHT = 531 / 5;
 const GROUND_PIPES_CLOUD_SPEED = 0.5;
 const OBSTACLE_CONFIG = [
-    {width: 40, height: 45, image: '../images/pipe.png'},
+    {width: 40, height: 45, image: './images/pipe.png'},
 ];
 
 
